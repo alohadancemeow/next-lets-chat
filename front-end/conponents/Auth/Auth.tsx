@@ -1,7 +1,10 @@
+import { useMutation } from "@apollo/client";
 import { Button, Center, Image, Input, Stack, Text } from "@chakra-ui/react";
 import { Session } from "next-auth";
 import { signIn } from "next-auth/react";
 import React, { useState } from "react";
+import UserOperations from "../../graphql/operations/user";
+import { CreateUsernameData, CreateUsernameVariables } from "../../utils/types";
 
 type Props = {
   session: Session | null;
@@ -11,13 +14,22 @@ type Props = {
 const Auth = ({ session, reloadSession }: Props) => {
   const [username, setUsername] = useState("");
 
+  const [createUsername, { data, loading, error }] = useMutation<
+    CreateUsernameData,
+    CreateUsernameVariables
+  >(UserOperations.Mutations.createUsername);
+
   const onSubmit = async () => {
+    if (!username) return;
     try {
       // create a mutatuion to graphql
+      await createUsername({ variables: { username } });
     } catch (error) {
       console.log("onSubmit error", error);
     }
   };
+
+  console.log("HERE IS DATA", data, loading, error);
 
   return (
     <Center height="100vh">

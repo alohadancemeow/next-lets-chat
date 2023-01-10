@@ -1,22 +1,39 @@
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import typeDefs from "./graphql/typeDefs";
 import resolvers from "./graphql/resolvers";
+
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import express from "express";
+import http from "http";
+import cors from "cors";
 
 const schema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
 
-const server = new ApolloServer({ schema });
-
-// Passing an ApolloServer instance to the `startStandaloneServer` function:
-//  1. creates an Express app
-//  2. installs your ApolloServer instance as middleware
-//  3. prepares your app to handle incoming requests
-const { url } = await startStandaloneServer(server, {
-  listen: { port: 4000 },
+const app = express();
+const httpServer = http.createServer(app);
+const server = new ApolloServer({
+  schema,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-console.log(`🚀  Server ready at: ${url}`);
+await server.start();
+
+app.use(
+  "/graphql",
+  cors<cors.CorsRequest>({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  }),
+  express.json(),
+  expressMiddleware(server)
+);
+
+await new Promise<void>((resolve) =>
+  httpServer.listen({ port: 4000 }, resolve)
+);
+console.log(`🚀 Server ready at http://localhost:4000/graphql`);
