@@ -1,11 +1,22 @@
-import express from 'express';
-const app = express();
-const port = 4000;
+import { ApolloServer } from "@apollo/server";
+import { startStandaloneServer } from "@apollo/server/standalone";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import typeDefs from "./graphql/typeDefs";
+import resolvers from "./graphql/resolvers";
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
 });
 
-app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+const server = new ApolloServer({ schema });
+
+// Passing an ApolloServer instance to the `startStandaloneServer` function:
+//  1. creates an Express app
+//  2. installs your ApolloServer instance as middleware
+//  3. prepares your app to handle incoming requests
+const { url } = await startStandaloneServer(server, {
+  listen: { port: 4000 },
 });
+
+console.log(`🚀  Server ready at: ${url}`);
