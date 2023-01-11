@@ -13,6 +13,9 @@
     "esModuleInterop": true,
     "types": [
       "node"
-    ]
-  }
+    ],
+  },
+  // "files": [
+  //   "lib/next-auth.d.ts"
+  // ],
 }

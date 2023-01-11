@@ -12,7 +12,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createUsername(username: String): CreateUsernameResponse
+    createUsername(username: String!): CreateUsernameResponse
   }
 
   type CreateUsernameResponse {
