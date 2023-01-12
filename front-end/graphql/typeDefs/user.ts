@@ -2,13 +2,13 @@ import gql from "graphql-tag";
 
 // User shcema
 const typeDefs = gql`
-  type User {
+  type SearchedUser {
     id: String
     username: String
   }
 
   type Query {
-    searchUsers(username: String): [User]
+    searchUsers(username: String): [SearchedUser]
   }
 
   type Mutation {
