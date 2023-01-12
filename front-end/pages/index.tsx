@@ -7,16 +7,20 @@ import { Box } from "@chakra-ui/react";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
-  console.log("HERE IS SWSSION", session);
+  console.log("HERE IS SESSION", session);
 
-  const reloadSesson = () => {};
+  // Reload session to obtain new username
+  const reloadSession = () => {
+    const event = new Event("visibilitychange");
+    document.dispatchEvent(event);
+  };
 
   return (
     <Box>
       {session?.user.username ? (
         <Chat />
       ) : (
-        <Auth session={session} reloadSession={reloadSesson} />
+        <Auth session={session} reloadSession={reloadSession} />
       )}
     </Box>
   );

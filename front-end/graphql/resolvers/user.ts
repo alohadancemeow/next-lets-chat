@@ -23,14 +23,38 @@ const resolvers = {
         };
       }
 
-      const { id } = session.user;
+      const { id: userId } = session.user;
 
       try {
-        // const existingUser = await prisma.user.findUnique({
-        // });
-      } catch (error) {
+        // Check that username is not taken
+        const existingUser = await prisma.user.findUnique({
+          where: {
+            username,
+          },
+        });
+
+        if (existingUser) {
+          return {
+            error: "Username already taken. Try another",
+          };
+        }
+
+        // Update username
+        await prisma.user.update({
+          where: {
+            id: userId,
+          },
+          data: {
+            username,
+          },
+        });
+
+        return { success: true };
+      } catch (error: any) {
         console.log("createUsername error", error);
-        return { error: error?.message };
+        return {
+          error: error?.message,
+        };
       }
     },
   },
