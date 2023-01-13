@@ -36,6 +36,7 @@ export interface SearchUsersData {
 export interface SearchUser {
   id: string;
   username: string;
+  image: string;
 }
 
 // Conversations

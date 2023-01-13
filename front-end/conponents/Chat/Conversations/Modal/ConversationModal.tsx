@@ -25,6 +25,7 @@ import UserSearchList from "./UserSearchList";
 import Participants from "./Participants";
 import { toast } from "react-hot-toast";
 import { Session } from "next-auth";
+import { useRouter } from "next/router";
 
 type Props = {
   session: Session;
@@ -35,6 +36,8 @@ type Props = {
 const ConversationModal = ({ session, isOpen, onClose }: Props) => {
   const [username, setUsername] = useState("");
   const [participants, setParticipants] = useState<Array<SearchUser>>([]);
+
+  const router = useRouter();
 
   // Get userId from session
   const {
@@ -53,7 +56,7 @@ const ConversationModal = ({ session, isOpen, onClose }: Props) => {
       ConversationOperations.Mutations.createConversation
     );
 
-  console.log("SEARCHUSER DATA", data);
+  // console.log("SEARCHUSER DATA", data);
 
   // Handle search user query
   const onSubmit = async (e: React.FormEvent) => {
@@ -79,6 +82,21 @@ const ConversationModal = ({ session, isOpen, onClose }: Props) => {
         variables: { participantIds },
       });
       console.log("onCreateConversationData", data);
+
+      if (!data?.createConversation) {
+        throw new Error("Failed t ocreate conversation");
+      }
+
+      const {
+        createConversation: { conversationId },
+      } = data;
+
+      router.push({ query: { conversationId } });
+
+      // Clear state and close modal on successful creation
+      setParticipants([]);
+      setUsername("");
+      onClose();
     } catch (error: any) {
       console.log("onCreateConversation error", error);
       toast.error(error.message);

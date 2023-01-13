@@ -2,10 +2,10 @@ import { gql } from "@apollo/client";
 
 const typeDefs = gql`
   type Mutation {
-    createConversation(participantIds: [String]): CreateCoversationResponse
+    createConversation(participantIds: [String]): CreateConversationResponse
   }
 
-  type CreateCoversationResponse {
+  type CreateConversationResponse {
     conversationId: String
   }
 `;

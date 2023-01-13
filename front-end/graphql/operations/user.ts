@@ -6,6 +6,7 @@ export default {
       query SearchUsers($username: String!) {
         searchUsers(username: $username) {
           id
+          image
           username
         }
       }
