@@ -11,31 +11,78 @@ import {
   Stack,
   Input,
 } from "@chakra-ui/react";
-import { useLazyQuery, useQuery } from "@apollo/client";
-
+import { useLazyQuery, useMutation } from "@apollo/client";
 import UserOperations from "../../../../graphql/operations/user";
-import { SearchUsersData, SearchUsersInput } from "../../../../utils/types";
+import ConversationOperations from "../../../../graphql/operations/conversation";
+import {
+  CreateConversationData,
+  CreateConversationInput,
+  SearchUser,
+  SearchUsersData,
+  SearchUsersInput,
+} from "../../../../utils/types";
 import UserSearchList from "./UserSearchList";
+import Participants from "./Participants";
+import { toast } from "react-hot-toast";
+import { Session } from "next-auth";
 
 type Props = {
+  session: Session;
   isOpen: boolean;
   onClose: () => void;
 };
 
-const ConversationModal = ({ isOpen, onClose }: Props) => {
+const ConversationModal = ({ session, isOpen, onClose }: Props) => {
   const [username, setUsername] = useState("");
+  const [participants, setParticipants] = useState<Array<SearchUser>>([]);
+
+  // Get userId from session
+  const {
+    user: { id: userId },
+  } = session;
+
+  // Call searchUsers query
   const [searchUsers, { data, loading, error }] = useLazyQuery<
     SearchUsersData,
     SearchUsersInput
   >(UserOperations.Queries.searchUsers);
 
+  // Call createConversation mutation
+  const [createConversation, { loading: createConversationLoading }] =
+    useMutation<CreateConversationData, CreateConversationInput>(
+      ConversationOperations.Mutations.createConversation
+    );
+
   console.log("SEARCHUSER DATA", data);
 
-  // Search user query
+  // Handle search user query
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     await searchUsers({ variables: { username } });
+  };
+
+  // Handle selected user
+  const addParticipant = (user: SearchUser) => {
+    setParticipants((prev) => [...prev, user]);
+    setUsername("");
+  };
+
+  const removeParticipant = (userId: string) => {
+    setParticipants((prev) => prev.filter((p) => p.id !== userId));
+  };
+
+  // Handle create conversation
+  const onCreateConversation = async () => {
+    const participantIds = [userId, ...participants.map((p) => p.id)];
+    try {
+      const { data } = await createConversation({
+        variables: { participantIds },
+      });
+      console.log("onCreateConversationData", data);
+    } catch (error: any) {
+      console.log("onCreateConversation error", error);
+      toast.error(error.message);
+    }
   };
 
   return (
@@ -58,7 +105,30 @@ const ConversationModal = ({ isOpen, onClose }: Props) => {
                 </Button>
               </Stack>
             </form>
-            {data?.searchUsers && <UserSearchList users={data.searchUsers} />}
+            {data?.searchUsers && (
+              <UserSearchList
+                users={data.searchUsers}
+                addParticipant={addParticipant}
+              />
+            )}
+            {participants.length !== 0 && (
+              <>
+                <Participants
+                  participants={participants}
+                  removeParticipant={removeParticipant}
+                />
+                <Button
+                  bg={"brand.100"}
+                  width="100%"
+                  mt={6}
+                  _hover={{ bg: "brand.100" }}
+                  isLoading={createConversationLoading}
+                  onClick={onCreateConversation}
+                >
+                  Create Conversation
+                </Button>
+              </>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>

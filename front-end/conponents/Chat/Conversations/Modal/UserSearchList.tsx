@@ -4,9 +4,10 @@ import { SearchUser } from "../../../../utils/types";
 
 type Props = {
   users: Array<SearchUser>;
+  addParticipant: (user: SearchUser) => void;
 };
 
-const UserSearchList = ({ users }: Props) => {
+const UserSearchList = ({ users, addParticipant }: Props) => {
   return (
     <>
       {users.length === 0 ? (
@@ -32,7 +33,7 @@ const UserSearchList = ({ users }: Props) => {
                 <Button
                   bg="brand.100"
                   _hover={{ bg: "brand.100" }}
-                  onClick={() => {}}
+                  onClick={() => addParticipant(user)}
                 >
                   Selecet
                 </Button>
