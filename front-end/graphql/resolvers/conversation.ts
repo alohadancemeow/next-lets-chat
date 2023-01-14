@@ -18,7 +18,6 @@ const resolvers = {
       const {
         user: { id: userId },
       } = session;
-      console.log("userId", userId);
 
       try {
         //  Find all conversations that user is part of
@@ -55,7 +54,7 @@ const resolvers = {
       args: { participantIds: Array<string> },
       contextValue: GraphQLContext
     ): Promise<{ conversationId: string }> => {
-      const { prisma, session } = contextValue;
+      const { prisma, session, pubsub } = contextValue;
       const { participantIds } = args;
 
       if (!session?.user) {
@@ -79,11 +78,25 @@ const resolvers = {
           include: conversationPopulated,
         });
 
+        // emit a "CONVERSATION_CREATED" event using pubsub
+        pubsub.publish("CONVERSATION_CREATED", {
+          conversationCreated: conversation,
+        });
+
         return { conversationId: conversation.id };
       } catch (error: any) {
         console.log("Error creating conversation", error);
         throw new GraphQLError("Error creating conversation");
       }
+    },
+  },
+  Subscription: {
+    conversationCreated: {
+      subscribe: (_: any, __: any, contextValue: GraphQLContext) => {
+        const { pubsub } = contextValue;
+
+        return pubsub.asyncIterator(["CONVERSATION_CREATED"]);
+      },
     },
   },
 };

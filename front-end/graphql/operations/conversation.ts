@@ -38,4 +38,32 @@ export default {
       }
     `,
   },
+  Subscriptions: {
+    conversationCreated: gql`
+      subscription Subscription {
+        conversationCreated {
+          createdAt
+          id
+          latestMessage {
+            body
+            createdAt
+            id
+            sender {
+              id
+              username
+            }
+          }
+          participants {
+            hasSeenLatestMessage
+            id
+            user {
+              id
+              username
+            }
+          }
+          updatedAt
+        }
+      }
+    `,
+  },
 };

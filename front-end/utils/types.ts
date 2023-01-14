@@ -1,14 +1,23 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import { Context } from "graphql-ws";
 import { Session } from "next-auth";
+import { PubSub } from "graphql-subscriptions";
 import {
   conversationPopulated,
   participantPopulated,
 } from "../graphql/resolvers/conversation";
 
-// Context
+// Contexts
 export interface GraphQLContext {
   session: Session | null;
   prisma: PrismaClient;
+  pubsub: PubSub;
+}
+
+export interface SubscriptionContext extends Context {
+  connectionParams: {
+    session?: Session;
+  };
 }
 
 // Create username
