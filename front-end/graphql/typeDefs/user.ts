@@ -2,6 +2,15 @@ import gql from "graphql-tag";
 
 // User shcema
 const typeDefs = gql`
+  type User {
+    id: String
+    name: String
+    username: String
+    email: String
+    emailVerified: Boolean
+    image: String
+  }
+
   type SearchedUser {
     id: String
     username: String

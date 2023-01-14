@@ -1,5 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { Session } from "next-auth";
+import {
+  conversationPopulated,
+  participantPopulated,
+} from "../graphql/resolvers/conversation";
 
 // Context
 export interface GraphQLContext {
@@ -40,6 +44,10 @@ export interface SearchUser {
 }
 
 // Conversations
+export interface ConversationsData {
+  conversations: Array<ConversationPopulated>;
+}
+
 export interface CreateConversationData {
   createConversation: {
     conversationId: string;
@@ -49,3 +57,11 @@ export interface CreateConversationData {
 export interface CreateConversationInput {
   participantIds: Array<string>;
 }
+
+export type ConversationPopulated = Prisma.ConversationGetPayload<{
+  include: typeof conversationPopulated;
+}>;
+
+export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{
+  include: typeof participantPopulated;
+}>;
