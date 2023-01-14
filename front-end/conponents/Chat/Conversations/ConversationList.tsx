@@ -3,12 +3,15 @@ import { Session } from "next-auth";
 import { Box, Text } from "@chakra-ui/react";
 
 import ConversationModal from "./Modal/ConversationModal";
+import { ConversationPopulated } from "../../../utils/types";
+import ConversationItem from "./ConversationItem";
 
 type Props = {
   session: Session;
+  conversations: Array<ConversationPopulated>;
 };
 
-const ConversationList = ({ session }: Props) => {
+const ConversationList = ({ session, conversations }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpen = () => setIsOpen(true);
@@ -29,6 +32,9 @@ const ConversationList = ({ session }: Props) => {
         </Text>
       </Box>
       <ConversationModal session={session} isOpen={isOpen} onClose={onClose} />
+      {conversations.map((conversation) => (
+        <ConversationItem key={conversation.id} conversation={conversation} />
+      ))}
     </Box>
   );
 };
