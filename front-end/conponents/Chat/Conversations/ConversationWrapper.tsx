@@ -26,6 +26,8 @@ const ConversationWrapper = ({ session }: Props) => {
    * and updates the query with the new conversation.
    */
   const subscribeToNewConversations = () => {
+    console.log("subscribeToNewConversations -->");
+
     subscribeToMore({
       document: ConversationOperations.Subscriptions.conversationCreated,
       updateQuery: (
@@ -39,6 +41,7 @@ const ConversationWrapper = ({ session }: Props) => {
         }
       ) => {
         if (!subscriptionData.data) return prev;
+
         console.log("Here is subscriptionData", subscriptionData);
 
         const newConversation = subscriptionData.data.conversationCreated;
@@ -57,10 +60,14 @@ const ConversationWrapper = ({ session }: Props) => {
 
   return (
     <Box width={{ base: "100%", md: "400px" }} bg="whiteAlpha.50" py={6} px={3}>
-      <ConversationList
-        session={session}
-        conversations={conversationData?.conversations || []}
-      />
+      {conversationLoading ? (
+        <>Loading...</>
+      ) : (
+        <ConversationList
+          session={session}
+          conversations={conversationData?.conversations || []}
+        />
+      )}
     </Box>
   );
 };

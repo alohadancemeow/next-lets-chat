@@ -22,7 +22,7 @@ const schema = makeExecutableSchema({
 
 const wsServer = new WebSocketServer({
   // server: httpServer,
-  port: 4000,
+  noServer: true,
   path: "/graphql/subscriptions",
 });
 
