@@ -44,7 +44,7 @@ export default {
   },
   Subscriptions: {
     conversationCreated: gql`
-      subscription Subscription {
+      subscription ConversationCreated {
         conversationCreated {
          ${ConversationFields}
         }

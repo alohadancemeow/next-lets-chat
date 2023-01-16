@@ -16,9 +16,7 @@ const resolvers = {
         throw new GraphQLError("Not authorized");
       }
 
-      const {
-        user: { id: userId },
-      } = session;
+      const { id } = session.user;
 
       try {
         //  Find all conversations that user is part of
@@ -38,7 +36,7 @@ const resolvers = {
         // Since above query does not work
         const myConversations = conversations.filter(
           (conversation) =>
-            !!conversation.participants.find((p) => p.userId === userId)
+            !!conversation.participants.find((p) => p.userId === id)
         );
         // console.log("myConversations", myConversations);
 
@@ -110,13 +108,19 @@ const resolvers = {
           contextValue: GraphQLContext
         ) => {
           const { session } = contextValue;
-          
+
+          if (!session?.user) {
+            throw new GraphQLError("Not authorized");
+          }
+
+          const { id: userId } = session.user;
+
           const {
             conversationCreate: { participants },
           } = payload;
 
           const userIsParticipant = !!participants.find(
-            (p) => p.userId === session?.user.id
+            (p) => p.userId === userId
           );
 
           return userIsParticipant;
