@@ -4,9 +4,12 @@ import { Box } from "@chakra-ui/react";
 import ConversationList from "./ConversationList";
 import { useQuery } from "@apollo/client";
 import ConversationOperations from "../../../graphql/operations/conversation";
-import { ConversationPopulated, ConversationsData } from "../../../utils/types";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
+import {
+  ConversationsData,
+  ConversationCreatedSubscriptionData,
+} from "../../../utils/types";
 
 type Props = {
   session: Session;
@@ -45,13 +48,7 @@ const ConversationWrapper = ({ session }: Props) => {
       document: ConversationOperations.Subscriptions.conversationCreated,
       updateQuery: (
         prev,
-        {
-          subscriptionData,
-        }: {
-          subscriptionData: {
-            data: { conversationCreated: ConversationPopulated };
-          };
-        }
+        { subscriptionData }: ConversationCreatedSubscriptionData
       ) => {
         if (!subscriptionData.data) return prev;
 
@@ -66,14 +63,15 @@ const ConversationWrapper = ({ session }: Props) => {
     });
   };
 
-  if (conversationError) {
-    toast.error("There was an error fetching conversations");
-    return null;
-  }
   // Execute subscription on mount
   useEffect(() => {
     subscribeToNewConversations();
   }, []);
+
+  if (conversationError) {
+    toast.error("There was an error fetching conversations");
+    return null;
+  }
 
   return (
     <Box

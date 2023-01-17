@@ -1,20 +1,14 @@
-import { ApolloClient, InMemoryCache } from "@apollo/client";
-import { split, HttpLink } from "@apollo/client";
-import { getMainDefinition } from "@apollo/client/utilities";
+import { ApolloClient, HttpLink, InMemoryCache, split } from "@apollo/client";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
+import { getMainDefinition } from "@apollo/client/utilities";
 import { createClient } from "graphql-ws";
 import { getSession } from "next-auth/react";
-
-const httpLink = new HttpLink({
-  uri: "api/graphql",
-  credentials: "same-origin",
-});
 
 const wsLink =
   typeof window !== "undefined"
     ? new GraphQLWsLink(
         createClient({
-          url: "ws://localhost:3000/graphql/subscriptions",
+          url: "ws://localhost:4000/graphql/subscriptions",
           connectionParams: async () => ({
             session: await getSession(),
           }),
@@ -22,14 +16,19 @@ const wsLink =
       )
     : null;
 
-const splitLink =
-  typeof window !== "undefined" && wsLink !== null
+const httpLink = new HttpLink({
+  uri: `http://localhost:4000/graphql`,
+  credentials: "include",
+});
+
+const link =
+  typeof window !== "undefined" && wsLink != null
     ? split(
         ({ query }) => {
-          const definition = getMainDefinition(query);
+          const def = getMainDefinition(query);
           return (
-            definition.kind === "OperationDefinition" &&
-            definition.operation === "subscription"
+            def.kind === "OperationDefinition" &&
+            def.operation === "subscription"
           );
         },
         wsLink,
@@ -38,7 +37,6 @@ const splitLink =
     : httpLink;
 
 export const client = new ApolloClient({
-  // uri: "api/graphql",
-  link: splitLink,
+  link,
   cache: new InMemoryCache(),
 });

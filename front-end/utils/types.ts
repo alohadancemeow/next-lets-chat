@@ -1,40 +1,18 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { Context } from "graphql-ws";
-import { Session } from "next-auth";
-import { PubSub } from "graphql-subscriptions";
-import {
-  conversationPopulated,
-  participantPopulated,
-} from "../graphql/resolvers/conversation";
-
-// Contexts
-export interface GraphQLContext {
-  session: Session | null;
-  prisma: PrismaClient;
-  pubsub: PubSub;
-}
-
-export interface SubscriptionContext extends Context {
-  connectionParams: {
-    session?: Session;
-  };
-}
+import { Prisma } from "@prisma/client";
 
 // Create username
-export interface CreateUsernameResponse {
-  success?: boolean;
-  error?: string;
+export interface CreateUsernameVariables {
+  username: string;
 }
-
 export interface CreateUsernameData {
   createUsername: {
     success: boolean;
     error: string;
   };
 }
-
-export interface CreateUsernameVariables {
-  username: string;
+export interface CreateUsernameResponse {
+  success?: boolean;
+  error?: string;
 }
 
 // Search users
@@ -53,24 +31,50 @@ export interface SearchUser {
 }
 
 // Conversations
-export interface ConversationsData {
-  conversations: Array<ConversationPopulated>;
-}
-
 export interface CreateConversationData {
   createConversation: {
     conversationId: string;
   };
 }
+export interface ConversationsData {
+  conversations: Array<ConversationPopulated>;
+}
 
-export interface CreateConversationInput {
-  participantIds: Array<string>;
+export interface ConversationCreatedSubscriptionData {
+  subscriptionData: {
+    data: {
+      conversationCreated: ConversationPopulated;
+    };
+  };
 }
 
 export type ConversationPopulated = Prisma.ConversationGetPayload<{
   include: typeof conversationPopulated;
 }>;
 
-export type ParticipantPopulated = Prisma.ConversationParticipantGetPayload<{
-  include: typeof participantPopulated;
-}>;
+export const participantPopulated =
+  Prisma.validator<Prisma.ConversationParticipantInclude>()({
+    user: {
+      select: {
+        id: true,
+        username: true,
+      },
+    },
+  });
+
+export const conversationPopulated =
+  Prisma.validator<Prisma.ConversationInclude>()({
+    participants: {
+      include: participantPopulated,
+    },
+    latestMessage: {
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+      },
+    },
+  });
