@@ -116,7 +116,7 @@ const resolvers = {
           const { id: userId } = session.user;
 
           const {
-            conversationCreate: { participants },
+            conversationCreated: { participants },
           } = payload;
 
           const userIsParticipant = !!participants.find(
@@ -131,7 +131,7 @@ const resolvers = {
 };
 
 export interface ConversationCreatedSubscriptionPayload {
-  conversationCreate: ConversationPopulated;
+  conversationCreated: ConversationPopulated;
 }
 
 // include statements

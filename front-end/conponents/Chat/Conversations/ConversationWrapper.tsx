@@ -4,7 +4,10 @@ import { Box } from "@chakra-ui/react";
 import ConversationList from "./ConversationList";
 import { useQuery } from "@apollo/client";
 import ConversationOperations from "../../../graphql/operations/conversation";
-import { ConversationPopulated, ConversationsData } from "../../../utils/types";
+import {
+  ConversationCreatedSubscriptionData,
+  ConversationsData,
+} from "../../../utils/types";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
 
@@ -45,13 +48,7 @@ const ConversationWrapper = ({ session }: Props) => {
       document: ConversationOperations.Subscriptions.conversationCreated,
       updateQuery: (
         prev,
-        {
-          subscriptionData,
-        }: {
-          subscriptionData: {
-            data: { conversationCreated: ConversationPopulated };
-          };
-        }
+        { subscriptionData }: ConversationCreatedSubscriptionData
       ) => {
         if (!subscriptionData.data) return prev;
 

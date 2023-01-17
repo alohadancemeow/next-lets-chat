@@ -63,6 +63,14 @@ export interface CreateConversationData {
   };
 }
 
+export interface ConversationCreatedSubscriptionData {
+  subscriptionData: {
+    data: {
+      conversationCreated: ConversationPopulated;
+    };
+  };
+}
+
 export interface CreateConversationInput {
   participantIds: Array<string>;
 }
