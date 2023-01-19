@@ -6,6 +6,7 @@ import {
   conversationPopulated,
   participantPopulated,
 } from "../src/graphql/resolvers/conversation";
+import { messagePopulated } from "../src/graphql/resolvers/message";
 
 export interface Session {
   user?: User;
@@ -29,8 +30,8 @@ export interface User {
   id?: string;
   username?: string;
   image?: string;
-  name?: string
-  email?: string
+  name?: string;
+  email?: string;
 }
 
 export interface CreateUsernameResponse {
@@ -67,17 +68,17 @@ export interface ConversationDeletedSubscriptionPayload {
 }
 
 // Messages
-// export interface SendMessageArguments {
-//   id: string;
-//   conversationId: string;
-//   senderId: string;
-//   body: string;
-// }
+export interface SendMessageArguments {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  body: string;
+}
 
-// export interface SendMessageSubscriptionPayload {
-//   messageSent: MessagePopulated;
-// }
+export interface MessageSentSubscriptionPayload {
+  messageSent: MessagePopulated;
+}
 
-// export type MessagePopulated = Prisma.MessageGetPayload<{
-//   include: typeof messagePopulated;
-// }>;
+export type MessagePopulated = Prisma.MessageGetPayload<{
+  include: typeof messagePopulated;
+}>;

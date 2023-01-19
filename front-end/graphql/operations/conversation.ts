@@ -10,6 +10,7 @@ const ConversationFields = `
       user {
         id
         username
+        image
       }
     }
     latestMessage {
