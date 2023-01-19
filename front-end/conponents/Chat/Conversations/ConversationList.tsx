@@ -5,17 +5,26 @@ import { Box, Text } from "@chakra-ui/react";
 import ConversationModal from "./Modal/ConversationModal";
 import { ConversationPopulated } from "../../../utils/types";
 import ConversationItem from "./ConversationItem";
+import { useRouter } from "next/router";
 
 type Props = {
   session: Session;
   conversations: Array<ConversationPopulated>;
+  onViewConversation: (conversationId: string) => void;
 };
 
-const ConversationList = ({ session, conversations }: Props) => {
+const ConversationList = ({
+  session,
+  conversations,
+  onViewConversation,
+}: Props) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const onOpen = () => setIsOpen(true);
   const onClose = () => setIsOpen(false);
+
+  const router = useRouter();
+  const { id: userId } = session.user;
 
   return (
     <Box width="100%">
@@ -33,7 +42,13 @@ const ConversationList = ({ session, conversations }: Props) => {
       </Box>
       <ConversationModal session={session} isOpen={isOpen} onClose={onClose} />
       {conversations.map((conversation) => (
-        <ConversationItem key={conversation.id} conversation={conversation} />
+        <ConversationItem
+          key={conversation.id}
+          userId={userId}
+          conversation={conversation}
+          onClick={() => onViewConversation(conversation.id)}
+          isSelected={conversation.id === router.query.conversationId}
+        />
       ))}
     </Box>
   );

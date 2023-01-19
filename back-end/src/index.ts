@@ -11,7 +11,7 @@ import { WebSocketServer } from "ws";
 import { getSession } from "next-auth/react";
 import resolvers from "./graphql/resolvers";
 import typeDefs from "./graphql/typeDefs";
-import { GraphQLContext, SubscriptionContext,Session } from "../utils/types";
+import { GraphQLContext, SubscriptionContext, Session } from "../utils/types";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";

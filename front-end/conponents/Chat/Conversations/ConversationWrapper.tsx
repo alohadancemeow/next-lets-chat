@@ -35,15 +35,19 @@ const ConversationWrapper = ({ session }: Props) => {
       },
     }
   );
-  console.log("Here is conversationData", conversationData);
+
+  // View conversation
+  const onViewConversation = async (conversationId: string) => {
+    // 1. push the conversationId to the router query params
+    router.push({ query: { conversationId } });
+    // 2. mark the conversation as read
+  };
 
   /**
    * subscribes to a new conversation
    * and updates the query with the new conversation.
    */
   const subscribeToNewConversations = () => {
-    console.log("subscribeToNewConversations -->");
-
     subscribeToMore({
       document: ConversationOperations.Subscriptions.conversationCreated,
       updateQuery: (
@@ -51,8 +55,6 @@ const ConversationWrapper = ({ session }: Props) => {
         { subscriptionData }: ConversationCreatedSubscriptionData
       ) => {
         if (!subscriptionData.data) return prev;
-
-        console.log("Here is subscriptionData", subscriptionData);
 
         const newConversation = subscriptionData.data.conversationCreated;
 
@@ -88,6 +90,7 @@ const ConversationWrapper = ({ session }: Props) => {
         <ConversationList
           session={session}
           conversations={conversationData?.conversations || []}
+          onViewConversation={onViewConversation}
         />
       )}
     </Box>
