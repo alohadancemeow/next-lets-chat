@@ -9,6 +9,7 @@ import {
 import MessageOperations from "../../../../graphql/operations/message";
 import { toast } from "react-hot-toast";
 import SkeletonLoader from "../../../common/SkeletonLoader";
+import MessageItem from "./MessageItem";
 
 type Props = {
   userId: string;
@@ -52,7 +53,7 @@ const Messages = ({ userId, conversationId }: Props) => {
   }, []);
 
   return (
-    <Flex direction={"column"} justify="flex-end" overflow={"hidden"}>
+    <Flex direction={"column"} justify="flex-end" overflow="hidden">
       {loading && (
         <Stack spacing={4} px={4}>
           <SkeletonLoader count={4} height="60px" />
@@ -60,9 +61,12 @@ const Messages = ({ userId, conversationId }: Props) => {
       )}
 
       {data?.messages && (
-        <Flex direction={"column-reverse"} overflowY="scroll" height={"100%"}>
+        <Flex direction={"column-reverse"} overflowY="scroll" height="100%">
           {data.messages.map((message) => (
-            <div key={message.id}>{message.body}</div>
+            <MessageItem
+              message={message}
+              sentByme={message.sender.id === userId}
+            />
           ))}
         </Flex>
       )}

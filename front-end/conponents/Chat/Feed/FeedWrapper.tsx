@@ -30,7 +30,7 @@ const FeedWrapper = ({ session }: Props) => {
             justify="space-between"
             overflow={"hidden"}
             flexGrow={1}
-            border="1px solid red"
+            // border="1px solid red"
           >
             <MessagesHeader userId={userId} conversationId={conversationId} />
             <Messages userId={userId} conversationId={conversationId} />
