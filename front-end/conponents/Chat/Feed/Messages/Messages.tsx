@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import {
   MessageSubscriptionData,
   MessagesVariables,
-  MesssagesData,
+  MessagesData,
 } from "../../../../utils/types";
 import MessageOperations from "../../../../graphql/operations/message";
 import { toast } from "react-hot-toast";
@@ -18,7 +18,7 @@ type Props = {
 
 const Messages = ({ userId, conversationId }: Props) => {
   const { data, loading, error, subscribeToMore } = useQuery<
-    MesssagesData,
+    MessagesData,
     MessagesVariables
   >(MessageOperations.Query.messages, {
     variables: { conversationId },
@@ -28,8 +28,6 @@ const Messages = ({ userId, conversationId }: Props) => {
   });
 
   console.log("here is message data", data?.messages);
-
-  if (error) return null;
 
   // Subscription
   const subscribeToMoreMessages = (conversationId: string) => {
@@ -42,7 +40,10 @@ const Messages = ({ userId, conversationId }: Props) => {
         const newMessage = subscriptionData.data.messageSent;
 
         return Object.assign({}, prev, {
-          messages: [newMessage, ...prev.messages],
+          messages:
+            newMessage.sender.id === userId
+              ? prev.messages
+              : [newMessage, ...prev.messages],
         });
       },
     });
@@ -50,7 +51,9 @@ const Messages = ({ userId, conversationId }: Props) => {
 
   useEffect(() => {
     subscribeToMoreMessages(conversationId);
-  }, []);
+  }, [conversationId]);
+
+  if (error) return null;
 
   return (
     <Flex direction={"column"} justify="flex-end" overflow="hidden">

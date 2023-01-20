@@ -85,7 +85,7 @@ export const conversationPopulated =
   });
 
 // Messsages
-export interface MesssagesData {
+export interface MessagesData {
   messages: Array<MessagePopulated>;
 }
 
