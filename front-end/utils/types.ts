@@ -105,3 +105,18 @@ export const messagePopulated = Prisma.validator<Prisma.MessageInclude>()({
     },
   },
 });
+
+export interface SendMessageArguments {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  body: string;
+}
+
+export interface MessageSubscriptionData {
+  subscriptionData: {
+    data: {
+      messageSent: MessagePopulated;
+    };
+  };
+}

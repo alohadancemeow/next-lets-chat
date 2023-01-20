@@ -40,8 +40,8 @@ export default {
   },
   Subscription: {
     messageSent: gql`
-      subscription Subscription($messageSentConversationId2: String) {
-        messageSent(conversationId: $messageSentConversationId2) {
+      subscription MessageSent($conversationId: String!) {
+        messageSent(conversationId: $conversationId) {
           ${MessageFields}
         }
       }

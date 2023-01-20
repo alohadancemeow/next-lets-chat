@@ -10,6 +10,7 @@ import {
   ConversationsData,
   ConversationCreatedSubscriptionData,
 } from "../../../utils/types";
+import SkeletonLoader from "../../common/SkeletonLoader";
 
 type Props = {
   session: Session;
@@ -80,12 +81,18 @@ const ConversationWrapper = ({ session }: Props) => {
       display={{ base: conversationId ? "none" : "flex", md: "flex" }}
       width={{ base: "100%", md: "400px" }}
       bg="whiteAlpha.50"
+      flexDirection={"column"}
       py={6}
       px={3}
+      gap={4}
       position="relative"
     >
       {conversationLoading ? (
-        <>Loading...</>
+        <SkeletonLoader
+          // count={conversationData?.conversations.length as number}
+          count={5}
+          height="80px"
+        />
       ) : (
         <ConversationList
           session={session}
