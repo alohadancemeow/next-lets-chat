@@ -2,7 +2,7 @@ import React, { cache, useEffect } from "react";
 import { Session } from "next-auth";
 import { Box } from "@chakra-ui/react";
 import ConversationList from "./ConversationList";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
 import ConversationOperations from "../../../graphql/operations/conversation";
 import toast from "react-hot-toast";
 import { useRouter } from "next/router";
@@ -10,6 +10,7 @@ import {
   ConversationsData,
   ConversationCreatedSubscriptionData,
   ParticipantPopulated,
+  ConversationUpdatedData,
 } from "../../../utils/types";
 import SkeletonLoader from "../../common/SkeletonLoader";
 
@@ -45,6 +46,30 @@ const ConversationWrapper = ({ session }: Props) => {
     { markConversationAsRead: boolean },
     { userId: string; conversationId: string }
   >(ConversationOperations.Mutations.markConversationAsRead);
+
+  // Call conversationUpdated subscription
+  useSubscription<ConversationUpdatedData, null>(
+    ConversationOperations.Subscriptions.conversationUpdated,
+    {
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+        console.log("on data firing", subscriptionData);
+
+        if (!subscriptionData) return;
+
+        const {
+          conversationUpdated: { conversation: updatedConversation },
+        } = subscriptionData;
+
+        const currentlyViewConversation =
+          updatedConversation.id === conversationId;
+
+        if (currentlyViewConversation) {
+          onViewConversation(conversationId, false);
+        }
+      },
+    }
+  );
 
   // Handle onViewConversation
   const onViewConversation = async (
@@ -113,7 +138,7 @@ const ConversationWrapper = ({ session }: Props) => {
           cache.writeFragment({
             id: `Conversation:${conversationId}`,
             fragment: gql`
-              fragment UpdateParticipant on Conversation {
+              fragment UpdatedParticipant on Conversation {
                 participants
               }
             `,

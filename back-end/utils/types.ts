@@ -63,6 +63,12 @@ export interface ConversationUpdatedSubscriptionData {
   };
 }
 
+export interface ConversationUpdatedSubscriptionPayload {
+  conversationUpdated: {
+    conversation: ConversationPopulated;
+  };
+}
+
 export interface ConversationDeletedSubscriptionPayload {
   conversationDeleted: ConversationPopulated;
 }

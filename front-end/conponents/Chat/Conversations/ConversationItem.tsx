@@ -126,7 +126,9 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
           <GoPrimitiveDot fontSize={18} color="#6B46C1" />
         )}
       </Flex>
-      <Avatar src={conversation.participants[1].user.image || ''} />
+      <Avatar
+      //  src={conversation.participants[1].user.image || ""}
+      />
       <Flex justify="space-between" width="80%" height="100%">
         <Flex direction="column" width="70%" height="100%">
           <Text

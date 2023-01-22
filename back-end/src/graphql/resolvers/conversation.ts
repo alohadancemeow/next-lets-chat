@@ -1,7 +1,12 @@
 import { Prisma } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { withFilter } from "graphql-subscriptions";
-import { ConversationPopulated, GraphQLContext } from "../../../utils/types";
+import { userIsConversationParticipant } from "../../../utils/functions";
+import {
+  ConversationPopulated,
+  ConversationUpdatedSubscriptionPayload,
+  GraphQLContext,
+} from "../../../utils/types";
 
 const resolvers = {
   Query: {
@@ -156,8 +161,42 @@ const resolvers = {
             conversationCreated: { participants },
           } = payload;
 
-          const userIsParticipant = !!participants.find(
-            (p) => p.userId === userId
+          const userIsParticipant = userIsConversationParticipant(
+            participants,
+            userId
+          );
+
+          return userIsParticipant;
+        }
+      ),
+    },
+    conversationUpdated: {
+      subscribe: withFilter(
+        (_: any, __: any, contextValue: GraphQLContext) => {
+          const { pubsub } = contextValue;
+          return pubsub.asyncIterator(["CONVERSATION_UPDATED"]);
+        },
+        (
+          payload: ConversationUpdatedSubscriptionPayload,
+          _: any,
+          contextValue: GraphQLContext
+        ) => {
+          const { session } = contextValue;
+
+          if (!session.user) {
+            throw new GraphQLError("Not authorized");
+          }
+
+          const { id: userId } = session.user;
+          const {
+            conversationUpdated: {
+              conversation: { participants },
+            },
+          } = payload;
+
+          const userIsParticipant = userIsConversationParticipant(
+            participants,
+            userId
           );
 
           return userIsParticipant;

@@ -27,8 +27,6 @@ const Messages = ({ userId, conversationId }: Props) => {
     },
   });
 
-  console.log("here is message data", data?.messages);
-
   // Subscription
   const subscribeToMoreMessages = (conversationId: string) => {
     subscribeToMore({

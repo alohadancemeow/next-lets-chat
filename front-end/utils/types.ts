@@ -40,6 +40,16 @@ export interface ConversationsData {
   conversations: Array<ConversationPopulated>;
 }
 
+export interface CreateConversationInput {
+  participantIds: Array<string>;
+}
+
+export interface ConversationUpdatedData {
+  conversationUpdated: {
+    conversation: ConversationPopulated;
+  };
+}
+
 export interface ConversationCreatedSubscriptionData {
   subscriptionData: {
     data: {

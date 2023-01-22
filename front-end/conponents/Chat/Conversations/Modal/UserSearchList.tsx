@@ -27,7 +27,9 @@ const UserSearchList = ({ users, addParticipant }: Props) => {
               _hover={{ bg: "whiteAlpha.200" }}
               key={user.id}
             >
-              <Avatar src={user.image}/>
+              <Avatar
+              //  src={user.image}
+              />
               <Flex justify={"space-between"} align="center" width="100%">
                 <Text color={"whiteAlpha.700"}> {user.username}</Text>
                 <Button
