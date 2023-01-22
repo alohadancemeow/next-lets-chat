@@ -11,6 +11,7 @@ import {
   ConversationCreatedSubscriptionData,
   ParticipantPopulated,
   ConversationUpdatedData,
+  ConversationDeletedData,
 } from "../../../utils/types";
 import SkeletonLoader from "../../common/SkeletonLoader";
 
@@ -53,7 +54,6 @@ const ConversationWrapper = ({ session }: Props) => {
     {
       onData: ({ client, data }) => {
         const { data: subscriptionData } = data;
-        console.log("on data firing", subscriptionData);
 
         if (!subscriptionData) return;
 
@@ -61,12 +61,46 @@ const ConversationWrapper = ({ session }: Props) => {
           conversationUpdated: { conversation: updatedConversation },
         } = subscriptionData;
 
-        const currentlyViewConversation =
+        const currentlyViewingConversation =
           updatedConversation.id === conversationId;
 
-        if (currentlyViewConversation) {
+        if (currentlyViewingConversation) {
           onViewConversation(conversationId, false);
         }
+      },
+    }
+  );
+
+  // Call conversationDeleted subscription
+  useSubscription<ConversationDeletedData, null>(
+    ConversationOperations.Subscriptions.conversationDeleted,
+    {
+      onData: ({ client, data }) => {
+        const { data: subscriptionData } = data;
+
+        if (!subscriptionData) return;
+
+        const existing = client.readQuery<ConversationsData>({
+          query: ConversationOperations.Queries.conversations,
+        });
+
+        if (!existing) return;
+
+        const { conversations } = existing;
+        const {
+          conversationDeleted: { id: deletedConversationId },
+        } = subscriptionData;
+
+        client.writeQuery<ConversationsData>({
+          query: ConversationOperations.Queries.conversations,
+          data: {
+            conversations: conversations.filter(
+              (conversation) => conversation.id !== deletedConversationId
+            ),
+          },
+        });
+
+        router.push("/");
       },
     }
   );
@@ -188,7 +222,7 @@ const ConversationWrapper = ({ session }: Props) => {
   return (
     <Box
       display={{ base: conversationId ? "none" : "flex", md: "flex" }}
-      width={{ base: "100%", md: "400px" }}
+      width={{ base: "100%", md: "430px" }}
       bg="whiteAlpha.50"
       flexDirection={"column"}
       py={6}

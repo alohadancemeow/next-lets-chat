@@ -50,6 +50,12 @@ export interface ConversationUpdatedData {
   };
 }
 
+export interface ConversationDeletedData {
+  conversationDeleted: {
+    id: string;
+  };
+}
+
 export interface ConversationCreatedSubscriptionData {
   subscriptionData: {
     data: {

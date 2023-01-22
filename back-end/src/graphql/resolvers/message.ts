@@ -78,7 +78,12 @@ const resolvers = {
       }
 
       const { id: userId } = session.user;
-      const { id: messageId, senderId, conversationId, body } = args;
+      const {
+        id: messageId,
+        senderId,
+        conversationId,
+        body: messageBody,
+      } = args;
 
       if (userId !== senderId) {
         throw new GraphQLError("Not authorized");
@@ -91,7 +96,7 @@ const resolvers = {
             id: messageId,
             senderId,
             conversationId,
-            body,
+            body: messageBody || "...",
           },
           include: messagePopulated,
         });
